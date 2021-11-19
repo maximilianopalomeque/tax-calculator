@@ -11,17 +11,22 @@ button.addEventListener("click", function(){
   let gamePrice = document.getElementById("value").value; // get price without taxes
 
   if (!(selectedPlatform === "Plataforma")){
-    let result = calculateTax (gamePrice, selectedPlatform); // return the final value
-    document.getElementById("displayResult").innerHTML = gameName + " costara con impuestos: " + result + " pesos."; // display result
+    if ((gamePrice > 0) && (gamePrice < 200000)){
+      let result = calculateTax (gamePrice, selectedPlatform); // return the final value
+      document.getElementById("displayResult").innerHTML = gameName + " costara con impuestos: " + result + " pesos."; // display result
 
-    let actualGame = {
-      platform: selectedPlatform,
-      name: gameName,
-      price: gamePrice,
-      priceWithTaxes: result
-    };
-    recentSearches.unshift(actualGame); // store the game in the beggining of array
-    displayArray(); // add first element of the array in the table
+      let actualGame = {
+        platform: selectedPlatform,
+        name: gameName,
+        price: gamePrice,
+        priceWithTaxes: result
+      };
+      recentSearches.unshift(actualGame); // store the game in the beggining of array
+      displayArray(); // add first element of the array in the table
+    }
+    else {
+      document.getElementById("displayResult").innerHTML = "Ingrese un precio valido"; 
+    }
   }
   else {
     document.getElementById("displayResult").innerHTML = "Seleccionar plataforma"; 
@@ -30,10 +35,10 @@ button.addEventListener("click", function(){
 
 function calculateTax(gamePrice, selectedPlatform){
   if (selectedPlatform === "Nintendo") {
-    return gamePrice * nintendoTaxes;
+    return (gamePrice * nintendoTaxes).toFixed(2);
   }
   else {
-    return gamePrice * xboxSteamTaxes;
+    return (gamePrice * nintendoTaxes).toFixed(2);
   }
 }
 
