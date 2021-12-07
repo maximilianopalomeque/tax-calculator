@@ -42,41 +42,39 @@ button.addEventListener("click", function(){
   let gameName = document.getElementById("gameName").value;
   let gamePrice = document.getElementById("value").value; // get price without taxes
   let selectedCurrency = document.getElementById("currency").value;
+  let resultSection = document.getElementById("displayResult");
   let result = 0;
 
-  if (!(selectedPlatform === "Seleccione plataforma")){
-    if ((gamePrice > 0) && (gamePrice < 200000)){
-      if (!(selectedCurrency === "Seleccione moneda")){
-        if (selectedCurrency === "Pesos"){
-          if (!(selectedPlatform === "PlayStation")){
-            selectedPlatform === "Nintendo" ? result = (gamePrice * nintendoTaxes).toFixed(2) : result = (gamePrice * xboxSteamTaxes).toFixed(2)
-            createObjectGame (selectedPlatform, gameName, gamePrice, result);
-            document.getElementById("displayResult").innerHTML = gameName + " costara con impuestos: " + result + " pesos."; // display result
-            displayArray(); // display the first element of the array in the table
-          }
-          else {
-            document.getElementById("displayResult").innerHTML = "PlayStation no tiene tienda en pesos, seleccione USD";
-          }
-        }
-        else { // USD is selected
-          getUsdApiData().then(data => {
-            result = ((gamePrice * parseFloat(data[0].casa.venta)) * usdTaxes).toFixed(2); // (gameprice * dolar oficial) * usd taxes
-            createObjectGame (selectedPlatform, gameName, gamePrice, result);
-            document.getElementById("displayResult").innerHTML = gameName + " costara con impuestos: " + result + " pesos."; // display result
-            displayArray();
-          });
-        }
-      }
-      else {
-        document.getElementById("displayResult").innerHTML = "Seleccione moneda";   
-      }
-    }
-    else {
-      document.getElementById("displayResult").innerHTML = "Ingrese un precio valido"; 
-    }
+  if (selectedPlatform === "Seleccione plataforma"){
+    resultSection.innerHTML = "Seleccionar plataforma";
+    return;
   }
-  else {
-    document.getElementById("displayResult").innerHTML = "Seleccionar plataforma"; 
+  if ((gamePrice < 0) || (gamePrice > 200000)){
+    resultSection.innerHTML = "Ingrese un precio valido";
+    return
+  }
+  if ((selectedCurrency === "Seleccione moneda")){
+    resultSection.innerHTML = "Seleccione moneda";
+    return
   }
   
+  if (selectedCurrency === "Pesos"){
+    if (!(selectedPlatform === "PlayStation")){
+      selectedPlatform === "Nintendo" ? result = (gamePrice * nintendoTaxes).toFixed(2) : result = (gamePrice * xboxSteamTaxes).toFixed(2)
+      createObjectGame (selectedPlatform, gameName, gamePrice, result);
+      resultSection.innerHTML = gameName + " costara con impuestos: " + result + " pesos."; // display result
+      displayArray(); // display the first element of the array in the table
+    }
+    else {
+      resultSection.innerHTML = "PlayStation no tiene tienda en pesos, seleccione USD";
+    }
+  }
+  else { // USD is selected
+    getUsdApiData().then(data => {
+      result = ((gamePrice * parseFloat(data[0].casa.venta)) * usdTaxes).toFixed(2); // (gameprice * dolar oficial) * usd taxes
+      createObjectGame (selectedPlatform, gameName, gamePrice, result);
+      resultSection.innerHTML = gameName + " costara con impuestos: " + result + " pesos.";
+      displayArray();
+    });
+  }
 })
